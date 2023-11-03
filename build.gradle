@@ -28,6 +28,9 @@ dependencies {
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'io.projectreactor:reactor-test'
+	// https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-starter-contract-stub-runner
+	implementation 'org.springframework.cloud:spring-cloud-starter-contract-stub-runner:4.0.4'
+
 }
 
 tasks.named('test') {
