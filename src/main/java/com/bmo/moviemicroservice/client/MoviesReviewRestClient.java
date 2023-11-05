@@ -1,7 +1,10 @@
 package com.bmo.moviemicroservice.client;
 
 import com.bmo.moviemicroservice.domain.MovieReview;
-import com.bmo.moviemicroservice.exception.MovieReviewClientException;
+import com.bmo.moviemicroservice.exception.MovieInfoServerException;
+import com.bmo.moviemicroservice.exception.MovieReviewNotFoundException;
+import com.bmo.moviemicroservice.exception.MovieReviewServerException;
+import com.bmo.moviemicroservice.util.RetrySpecUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -42,9 +45,10 @@ public class MoviesReviewRestClient {
                         return Mono.empty();
                     }
                     return clientResponse.bodyToMono(String.class)
-                            .flatMap(s -> Mono.error(new MovieReviewClientException("Error to Retrieve Movie Review: " + s)));
+                            .flatMap(s -> Mono.error(new MovieReviewServerException(s)));
                 })
                 .bodyToFlux(MovieReview.class)
+                .retryWhen(RetrySpecUtils.retrySpec())
                 .log();
     }
 }

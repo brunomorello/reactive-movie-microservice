@@ -1,6 +1,6 @@
 package com.bmo.moviemicroservice.config;
 
-import com.bmo.moviemicroservice.exception.MovieInfoClientException;
+import com.bmo.moviemicroservice.exception.MovieInfoNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -13,8 +13,8 @@ public class GlobalErrorHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GlobalErrorHandler.class);
 
-    @ExceptionHandler(MovieInfoClientException.class)
-    public ResponseEntity<String> handleClientException(MovieInfoClientException exception) {
+    @ExceptionHandler(MovieInfoNotFoundException.class)
+    public ResponseEntity<String> handleClientException(MovieInfoNotFoundException exception) {
         LOGGER.error("Exception Caught in handleClientException: {}", exception.getMessage());
         return ResponseEntity.status(exception.getStatusCode()).body(exception.getMessage());
     }
