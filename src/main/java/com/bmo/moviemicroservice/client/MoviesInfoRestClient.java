@@ -1,5 +1,6 @@
 package com.bmo.moviemicroservice.client;
 
+import com.bmo.moviemicroservice.domain.Movie;
 import com.bmo.moviemicroservice.domain.MovieInfo;
 import com.bmo.moviemicroservice.exception.MovieInfoNotFoundException;
 import com.bmo.moviemicroservice.exception.MovieInfoServerException;
@@ -12,6 +13,7 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.Exceptions;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.util.retry.Retry;
 import reactor.util.retry.RetryBackoffSpec;
@@ -47,6 +49,19 @@ public class MoviesInfoRestClient {
                 })
                 .bodyToMono(MovieInfo.class)
                 .retryWhen(RetrySpecUtils.retrySpec())
+                .log();
+    }
+
+    public Flux<MovieInfo> movieInfoStream() {
+        var url = moviesInfoUrl + "/stream";
+        return webClient.get()
+                .uri(url)
+                .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, clientResponse -> {
+                    LOGGER.error("Status Code is: {}", clientResponse.statusCode().value());
+                    return Mono.error(new MovieInfoNotFoundException("Movie not found", clientResponse.statusCode().value()));
+                })
+                .bodyToFlux(MovieInfo.class)
                 .log();
     }
 }
